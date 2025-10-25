@@ -304,22 +304,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                       ),
               ),
-            ),
-
-            const SizedBox(height: 12),
-            Center(
-              child: TextButton(
-                onPressed: _isLoading ? null : widget.onRegister,
-                child: const Text(
-                  'Cadastrar-me',
-                  style: TextStyle(
-                    color: Color(0xFF0857C3),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
+            ),           
           ],
         ),
       ),

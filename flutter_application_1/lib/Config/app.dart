@@ -46,7 +46,7 @@ class App extends StatelessWidget {
         Rotas.protocolSearch: (context) => const ProtocolSearchScreen(),
         Rotas.signNewUser: (context) =>
             const WidgetCadastroFuncionario(adminUserId: 1),
-        //Rotas.signNewCompany: (context) => const WidgetCadastroEmpresa(),
+        Rotas.signNewCompany: (context) => const WidgetCadastroEmpresa(),
       },
     );
   }

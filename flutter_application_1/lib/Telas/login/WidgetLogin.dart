@@ -102,7 +102,7 @@ class WidgetLogin extends StatelessWidget {
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w400,
-                      ),
+                      ),  
                     ),
                     const SizedBox(height: 48),
                     Card(

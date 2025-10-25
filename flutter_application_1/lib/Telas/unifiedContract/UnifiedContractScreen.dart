@@ -234,7 +234,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.abc),
+            icon: Icon(Icons.add_business),
             tooltip: 'Cadastrar empresa',
             onPressed: () => Navigator.pushNamed(context, Rotas.signNewCompany),
           ),

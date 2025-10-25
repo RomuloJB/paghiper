@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Services/CompanyService.dart';
-import 'package:flutter_application_1/Services/AuthService.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 /// Tela para admin cadastrar sua empresa
 class WidgetCadastroEmpresa extends StatefulWidget {
-  final AuthResult authResult; // Dados do admin logado
-
   const WidgetCadastroEmpresa({
     Key? key,
-    required this.authResult,
   }) : super(key: key);
 
   @override
@@ -39,7 +35,7 @@ class _WidgetCadastroEmpresaState extends State<WidgetCadastroEmpresa> {
         name: _nomeController.text.trim(),
         cnpj: _cnpjController.text
             .replaceAll(RegExp(r'[^\d]'), ''), // Remove máscara
-        adminUserId: widget.authResult.user.id!,
+        adminUserId: 1, // TODO: Obter do usuário logado
       );
 
       if (!mounted) return;
@@ -48,17 +44,24 @@ class _WidgetCadastroEmpresaState extends State<WidgetCadastroEmpresa> {
         SnackBar(
           content: Text('Empresa "${company.name}" cadastrada com sucesso!'),
           backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
 
-      // Voltar para dashboard ou navegar para adicionar funcionários
-      Navigator.of(context).pop(company);
+      // Limpar campos
+      _nomeController.clear();
+      _cnpjController.clear();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     } finally {
@@ -76,102 +79,176 @@ class _WidgetCadastroEmpresaState extends State<WidgetCadastroEmpresa> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text('Cadastrar Empresa'),
+        centerTitle: false,
+        elevation: 0,
         backgroundColor: const Color(0xFF0857C3),
+        foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const SizedBox(height: 20),
-              const Icon(
-                Icons.business,
-                size: 80,
-                color: Color(0xFF0857C3),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Cadastre sua empresa',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Admin: ${widget.authResult.userName}',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome da Empresa',
-                  prefixIcon: Icon(Icons.business_outlined),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Informe o nome da empresa'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _cnpjController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [_cnpjMask],
-                decoration: const InputDecoration(
-                  labelText: 'CNPJ (opcional)',
-                  prefixIcon: Icon(Icons.badge_outlined),
-                  border: OutlineInputBorder(),
-                  hintText: '00.000.000/0000-00',
-                ),
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    final cnpjDigits = value.replaceAll(RegExp(r'[^\d]'), '');
-                    if (cnpjDigits.length != 14) {
-                      return 'CNPJ deve ter 14 dígitos';
-                    }
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0857C3),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          elevation: 2,
+          shadowColor: Colors.black.withOpacity(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0857C3).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.business,
+                          color: Color(0xFF0857C3),
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Text(
+                        'Cadastre sua empresa',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF212121),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _nomeController,
+                    decoration: InputDecoration(
+                      labelText: 'Nome da Empresa',
+                      prefixIcon: const Icon(
+                        Icons.business_outlined,
+                        color: Color(0xFF0857C3),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE0E0E0),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE0E0E0),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF0857C3),
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                    validator: (value) => (value == null || value.trim().isEmpty)
+                        ? 'Informe o nome da empresa'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _cnpjController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [_cnpjMask],
+                    decoration: InputDecoration(
+                      labelText: 'CNPJ (opcional)',
+                      prefixIcon: const Icon(
+                        Icons.badge_outlined,
+                        color: Color(0xFF0857C3),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE0E0E0),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE0E0E0),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF0857C3),
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                      hintText: '00.000.000/0000-00',
+                      helperText: 'Formato: 00.000.000/0000-00',
+                      helperStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        final cnpjDigits = value.replaceAll(RegExp(r'[^\d]'), '');
+                        if (cnpjDigits.length != 14) {
+                          return 'CNPJ deve ter 14 dígitos';
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF24d17a),
+                        foregroundColor: Colors.white,
+                        elevation: 2,
+                        shadowColor: const Color(0xFF24d17a).withOpacity(0.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: _isLoading ? null : _cadastrarEmpresa,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Cadastrar Empresa',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                     ),
                   ),
-                  onPressed: _isLoading
-                      ? null
-                      : () {
-                          _cadastrarEmpresa();
-                        },
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'Cadastrar Empresa',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

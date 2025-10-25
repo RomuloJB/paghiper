@@ -33,6 +33,7 @@ class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
   Company? _empresaSelecionada;
   bool _isLoading = false;
   bool _isLoadingCompanies = true;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -389,12 +390,26 @@ class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
 
                                 TextFormField(
                                   controller: _senhaController,
-                                  obscureText: true,
+                                  obscureText: _obscurePassword,
                                   decoration: InputDecoration(
                                     labelText: 'Senha inicial',
                                     prefixIcon: const Icon(
                                       Icons.lock_outline,
                                       color: Color(0xFF0857C3),
+                                    ),
+                                    suffixIcon: IconButton(
+                                      tooltip: _obscurePassword
+                                          ? 'Mostrar senha'
+                                          : 'Ocultar senha',
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                        color: Colors.grey[600],
+                                      ),
+                                      onPressed: () => setState(
+                                        () => _obscurePassword = !_obscurePassword,
+                                      ),
                                     ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
