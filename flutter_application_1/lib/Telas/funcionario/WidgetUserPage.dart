@@ -20,7 +20,6 @@ class WidgetUserPage extends StatefulWidget {
 }
 
 class _WidgetUserPageState extends State<WidgetUserPage> {
-  final _searchController = TextEditingController();
   final _companyService = CompanyService();
   final _companyDAO = CompanyDao();
   final _userDao = UserDao();
@@ -28,7 +27,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   List<Company> _listCompanies = [];
   Company? _empresaSelecionada;
   List<User> _allFuncionarios = [];
-  List<User> _filteredFuncionarios = [];
   User? _selectedFuncionario;
   
   bool _isLoadingCompanies = true;
@@ -38,7 +36,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   void initState() {
     super.initState();
     _carregarEmpresas();
-    _searchController.addListener(_filterFuncionarios);
   }
 
   Future<void> _carregarEmpresas() async {
@@ -79,7 +76,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
       );
       setState(() {
         _allFuncionarios = funcionarios;
-        _filteredFuncionarios = funcionarios;
       });
     } catch (e) {
       if (!mounted) return;
@@ -92,21 +88,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
     } finally {
       setState(() => _isLoadingFuncionarios = false);
     }
-  }
-
-  void _filterFuncionarios() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredFuncionarios = _allFuncionarios;
-      } else {
-        _filteredFuncionarios = _allFuncionarios.where((func) {
-          final nomeMatch = func.name?.toLowerCase().contains(query) ?? false;
-          final idMatch = func.id?.toString().contains(query) ?? false;
-          return nomeMatch || idMatch;
-        }).toList();
-      }
-    });
   }
 
   Future<void> _editarFuncionario(User funcionario) async {
@@ -285,7 +266,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -456,7 +436,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
 
                       const SizedBox(height: 20),
 
-                      // Campo de busca com dropdown
+                      // Campo de busca com dropdown integrado
                       Card(
                         elevation: 2,
                         shadowColor: Colors.black.withOpacity(0.1),
@@ -496,50 +476,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                               ),
                               const SizedBox(height: 20),
                               
-                              TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  labelText: 'Buscar por nome ou ID',
-                                  hintText: 'Digite para filtrar...',
-                                  prefixIcon: const Icon(
-                                    Icons.search,
-                                    color: Color(0xFF0857C3),
-                                  ),
-                                  suffixIcon: _searchController.text.isNotEmpty
-                                      ? IconButton(
-                                          icon: const Icon(Icons.clear),
-                                          onPressed: () {
-                                            _searchController.clear();
-                                          },
-                                        )
-                                      : null,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFF0857C3),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[50],
-                                ),
-                              ),
-                              
-                              const SizedBox(height: 20),
-                              
-                              // Dropdown com funcionários filtrados
+                              // Dropdown com busca integrada
                               if (_isLoadingFuncionarios)
                                 const Center(
                                   child: Padding(
@@ -549,7 +486,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                     ),
                                   ),
                                 )
-                              else if (_filteredFuncionarios.isEmpty)
+                              else if (_allFuncionarios.isEmpty)
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
@@ -562,9 +499,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
-                                          _searchController.text.isEmpty
-                                              ? 'Nenhum funcionário cadastrado'
-                                              : 'Nenhum resultado encontrado',
+                                          'Nenhum funcionário cadastrado',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[600],
@@ -575,47 +510,159 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                   ),
                                 )
                               else
-                                DropdownButtonFormField<User>(
-                                  value: _selectedFuncionario,
-                                  decoration: InputDecoration(
-                                    labelText: 'Selecione um funcionário',
-                                    prefixIcon: const Icon(
-                                      Icons.person,
-                                      color: Color(0xFF0857C3),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFE0E0E0),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFE0E0E0),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFF0857C3),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey[50],
-                                  ),
-                                  items: _filteredFuncionarios.map((func) {
-                                    return DropdownMenuItem<User>(
-                                      value: func,
-                                      child: Text(
-                                        '${func.name} (ID: ${func.id})',
-                                        overflow: TextOverflow.ellipsis,
+                                Autocomplete<User>(
+                                  optionsBuilder: (TextEditingValue textEditingValue) {
+                                    if (textEditingValue.text.isEmpty) {
+                                      return _allFuncionarios;
+                                    }
+                                    final query = textEditingValue.text.toLowerCase();
+                                    return _allFuncionarios.where((User funcionario) {
+                                      final nomeMatch = funcionario.name?.toLowerCase().contains(query) ?? false;
+                                      final idMatch = funcionario.id?.toString().contains(query) ?? false;
+                                      return nomeMatch || idMatch;
+                                    });
+                                  },
+                                  displayStringForOption: (User funcionario) =>
+                                      '${funcionario.name} (ID: ${funcionario.id})',
+                                  onSelected: (User funcionario) {
+                                    setState(() => _selectedFuncionario = funcionario);
+                                  },
+                                  fieldViewBuilder: (
+                                    BuildContext context,
+                                    TextEditingController textEditingController,
+                                    FocusNode focusNode,
+                                    VoidCallback onFieldSubmitted,
+                                  ) {
+                                    return TextFormField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      decoration: InputDecoration(
+                                        labelText: 'Buscar por nome ou ID',
+                                        hintText: 'Digite para filtrar...',
+                                        prefixIcon: const Icon(
+                                          Icons.search,
+                                          color: Color(0xFF0857C3),
+                                        ),
+                                        suffixIcon: textEditingController.text.isNotEmpty
+                                            ? IconButton(
+                                                icon: const Icon(Icons.clear),
+                                                onPressed: () {
+                                                  textEditingController.clear();
+                                                  setState(() => _selectedFuncionario = null);
+                                                },
+                                              )
+                                            : const Icon(
+                                                Icons.arrow_drop_down,
+                                                color: Color(0xFF0857C3),
+                                              ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFE0E0E0),
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFE0E0E0),
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFF0857C3),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.grey[50],
                                       ),
                                     );
-                                  }).toList(),
-                                  onChanged: (user) {
-                                    setState(() => _selectedFuncionario = user);
+                                  },
+                                  optionsViewBuilder: (
+                                    BuildContext context,
+                                    AutocompleteOnSelected<User> onSelected,
+                                    Iterable<User> options,
+                                  ) {
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        elevation: 4.0,
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          constraints: const BoxConstraints(maxHeight: 300),
+                                          width: MediaQuery.of(context).size.width - 88,
+                                          child: ListView.builder(
+                                            padding: EdgeInsets.zero,
+                                            shrinkWrap: true,
+                                            itemCount: options.length,
+                                            itemBuilder: (BuildContext context, int index) {
+                                              final User funcionario = options.elementAt(index);
+                                              return InkWell(
+                                                onTap: () => onSelected(funcionario),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 12,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      bottom: BorderSide(
+                                                        color: Colors.grey[200]!,
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 20,
+                                                        backgroundColor: const Color(0xFF0857C3),
+                                                        child: Text(
+                                                          funcionario.name
+                                                                  ?.substring(0, 1)
+                                                                  .toUpperCase() ??
+                                                              '?',
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              funcionario.name ?? 'Sem nome',
+                                                              style: const TextStyle(
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: 14,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(height: 2),
+                                                            Text(
+                                                              'ID: ${funcionario.id}',
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors.grey[600],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                             ],
