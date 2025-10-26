@@ -4,8 +4,9 @@ import 'package:flutter_application_1/Telas/Dashboard/WidgetDashboard.dart';
 import 'package:flutter_application_1/Telas/Listagem/WidgetListagem.dart';
 import 'package:flutter_application_1/Telas/Login/WidgetLogin.dart';
 import 'package:flutter_application_1/Telas/NewContract/NewContract.dart';
-import 'package:flutter_application_1/Telas/cadastro/WidgetCadastroEmpresa.dart';
-import 'package:flutter_application_1/Telas/cadastro/WidgetCadastroFuncionario.dart';
+import 'package:flutter_application_1/Telas/empresa/WidgetCadastroEmpresa.dart';
+import 'package:flutter_application_1/Telas/funcionario/WidgetCadastroFuncionario.dart';
+import 'package:flutter_application_1/Telas/funcionario/WidgetFuncionariosPage.dart';
 import 'package:flutter_application_1/Telas/protocol/ProtocolSearchScreen.dart';
 import 'package:flutter_application_1/Telas/unifiedContract/UnifiedContractScreen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -47,6 +48,7 @@ class App extends StatelessWidget {
         Rotas.signNewUser: (context) =>
             const WidgetCadastroFuncionario(adminUserId: 1),
         Rotas.signNewCompany: (context) => const WidgetCadastroEmpresa(),
+        Rotas.usersPage: (context) => const WidgetFuncionariosPage(adminUserId: 1),
       },
     );
   }

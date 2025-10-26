@@ -241,7 +241,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
           IconButton(
             icon: const Icon(Icons.group_add),
             tooltip: 'Cadastrar funcionário',
-            onPressed: () => Navigator.pushNamed(context, Rotas.signNewUser),
+            onPressed: () => Navigator.pushNamed(context, Rotas.usersPage),
           ),
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),

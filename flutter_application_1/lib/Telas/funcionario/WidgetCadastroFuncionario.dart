@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Banco/entidades/Company.dart';
 import 'package:flutter_application_1/Services/CompanyService.dart';
 import 'package:flutter_application_1/Banco/DAO/CompanyDAO.dart';
-import 'package:flutter_application_1/Telas/cadastro/WidgetListaFuncionarios.dart';
+import 'package:flutter_application_1/Telas/funcionario/WidgetListaFuncionarios.dart';
 
 /// Tela para admin adicionar funcionário vinculado a uma empresa
 class WidgetCadastroFuncionario extends StatefulWidget {
@@ -105,6 +105,9 @@ class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
 
       // Atualizar lista filha
       (_listaKey.currentState as dynamic)?.recarregar();
+      
+      // Retornar true para indicar sucesso (para quando for usado como página de navegação)
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
