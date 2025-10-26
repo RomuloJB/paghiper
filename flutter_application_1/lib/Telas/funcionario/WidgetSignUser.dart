@@ -2,32 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Banco/entidades/Company.dart';
 import 'package:flutter_application_1/Services/CompanyService.dart';
 import 'package:flutter_application_1/Banco/DAO/CompanyDAO.dart';
-import 'package:flutter_application_1/Telas/funcionario/WidgetListaFuncionarios.dart';
 
 /// Tela para admin adicionar funcionário vinculado a uma empresa
-class WidgetCadastroFuncionario extends StatefulWidget {
+class WidgetSignUser extends StatefulWidget {
   final int adminUserId;
 
-  const WidgetCadastroFuncionario({
+  const WidgetSignUser({
     Key? key,
     required this.adminUserId,
   }) : super(key: key);
 
   @override
-  State<WidgetCadastroFuncionario> createState() =>
-      _WidgetCadastroFuncionarioState();
+  State<WidgetSignUser> createState() =>
+      _WidgetSignUserState();
 }
 
-class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
+class _WidgetSignUserState extends State<WidgetSignUser> {
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   final _companyService = CompanyService();
   final _companyDAO = CompanyDao();
-
-  // Key para controlar o widget filho
-  final _listaKey = GlobalKey();
 
   List<Company> _listCompanies = [];
   Company? _empresaSelecionada;
@@ -102,9 +98,6 @@ class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
       _nomeController.clear();
       _emailController.clear();
       _senhaController.clear();
-
-      // Atualizar lista filha
-      (_listaKey.currentState as dynamic)?.recarregar();
       
       // Retornar true para indicar sucesso (para quando for usado como página de navegação)
       Navigator.pop(context, true);
@@ -498,16 +491,6 @@ class _WidgetCadastroFuncionarioState extends State<WidgetCadastroFuncionario> {
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 32),
-
-                      // LISTA DE FUNCIONÁRIOS
-                      if (_empresaSelecionada != null)
-                        WidgetListaFuncionarios(
-                          key: _listaKey,
-                          companyId: _empresaSelecionada!.id!,
-                          adminUserId: widget.adminUserId,
-                        ),
                     ],
                   ),
                 ),

@@ -4,22 +4,22 @@ import 'package:flutter_application_1/Banco/entidades/User.dart';
 import 'package:flutter_application_1/Services/CompanyService.dart';
 import 'package:flutter_application_1/Banco/DAO/CompanyDAO.dart';
 import 'package:flutter_application_1/banco/DAO/UserDAO.dart';
-import 'package:flutter_application_1/Telas/funcionario/WidgetCadastroFuncionario.dart';
+import 'package:flutter_application_1/Telas/funcionario/WidgetSignUser.dart';
 
 /// Página principal de gerenciamento de funcionários
-class WidgetFuncionariosPage extends StatefulWidget {
+class WidgetUserPage extends StatefulWidget {
   final int adminUserId;
 
-  const WidgetFuncionariosPage({
+  const WidgetUserPage({
     Key? key,
     required this.adminUserId,
   }) : super(key: key);
 
   @override
-  State<WidgetFuncionariosPage> createState() => _WidgetFuncionariosPageState();
+  State<WidgetUserPage> createState() => _WidgetUserPageState();
 }
 
-class _WidgetFuncionariosPageState extends State<WidgetFuncionariosPage> {
+class _WidgetUserPageState extends State<WidgetUserPage> {
   final _searchController = TextEditingController();
   final _companyService = CompanyService();
   final _companyDAO = CompanyDao();
@@ -271,7 +271,7 @@ class _WidgetFuncionariosPageState extends State<WidgetFuncionariosPage> {
     final resultado = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => WidgetCadastroFuncionario(
+        builder: (context) => WidgetSignUser(
           adminUserId: widget.adminUserId,
         ),
       ),

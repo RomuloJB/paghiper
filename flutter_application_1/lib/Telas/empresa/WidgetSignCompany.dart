@@ -3,16 +3,16 @@ import 'package:flutter_application_1/Services/CompanyService.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 /// Tela para admin cadastrar sua empresa
-class WidgetCadastroEmpresa extends StatefulWidget {
-  const WidgetCadastroEmpresa({
+class WidgetSignCompany extends StatefulWidget {
+  const WidgetSignCompany({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<WidgetCadastroEmpresa> createState() => _WidgetCadastroEmpresaState();
+  State<WidgetSignCompany> createState() => _WidgetSignCompanyState();
 }
 
-class _WidgetCadastroEmpresaState extends State<WidgetCadastroEmpresa> {
+class _WidgetSignCompanyState extends State<WidgetSignCompany> {
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
   final _cnpjController = TextEditingController();
