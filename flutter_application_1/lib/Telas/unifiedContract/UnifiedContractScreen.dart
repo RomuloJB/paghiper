@@ -234,13 +234,13 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.add_business),
-            tooltip: 'Cadastrar empresa',
-            onPressed: () => Navigator.pushNamed(context, Rotas.signNewCompany),
+            icon: Icon(Icons.store),
+            tooltip: 'Empresas',
+            onPressed: () => Navigator.pushNamed(context, Rotas.companiesPage),
           ),
           IconButton(
-            icon: const Icon(Icons.group_add),
-            tooltip: 'Cadastrar funcionário',
+            icon: const Icon(Icons.group),
+            tooltip: 'Funcionários',
             onPressed: () => Navigator.pushNamed(context, Rotas.usersPage),
           ),
           IconButton(

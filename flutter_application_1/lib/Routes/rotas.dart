@@ -9,4 +9,5 @@ class Rotas {
   static const String signNewUser = '/sign-new-user';
   static const String signNewCompany = '/sign-new-company';
   static const String usersPage = '/users-page';
+  static const String companiesPage = '/companies-page';
 }

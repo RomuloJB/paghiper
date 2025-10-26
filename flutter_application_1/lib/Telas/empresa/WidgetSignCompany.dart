@@ -46,13 +46,16 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),    
         ),
       );
 
       // Limpar campos
       _nomeController.clear();
       _cnpjController.clear();
+      
+      // Retornar true para indicar sucesso (para quando for usado como página de navegação)
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -81,7 +84,7 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text('Cadastrar Empresa'),
+        title: const Text('Gerenciar Empresas'),
         centerTitle: false,
         elevation: 0,
         backgroundColor: const Color(0xFF0857C3),
@@ -118,7 +121,7 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
                       ),
                       const SizedBox(width: 16),
                       const Text(
-                        'Cadastre sua empresa',
+                        'Adicionar Empresa',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'package:flutter_application_1/Telas/Dashboard/WidgetDashboard.dart';
 import 'package:flutter_application_1/Telas/Listagem/WidgetListagem.dart';
 import 'package:flutter_application_1/Telas/Login/WidgetLogin.dart';
 import 'package:flutter_application_1/Telas/NewContract/NewContract.dart';
+import 'package:flutter_application_1/Telas/empresa/WidgetCompanyPage.dart';
 import 'package:flutter_application_1/Telas/empresa/WidgetSignCompany.dart';
 import 'package:flutter_application_1/Telas/funcionario/WidgetSignUser.dart';
 import 'package:flutter_application_1/Telas/funcionario/WidgetUserPage.dart';
@@ -47,8 +48,9 @@ class App extends StatelessWidget {
         Rotas.protocolSearch: (context) => const ProtocolSearchScreen(),
         Rotas.signNewUser: (context) =>
             const WidgetSignUser(adminUserId: 1),
-        Rotas.signNewCompany: (context) => const WidgetSignCompany(),
         Rotas.usersPage: (context) => const WidgetUserPage(adminUserId: 1),
+        Rotas.companiesPage: (context) => const WidgetCompanyPage(),
+        Rotas.signNewCompany: (context) => const WidgetSignCompany(),
       },
     );
   }
