@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Telas/listagem/ContractDeatil.dart';
 import 'package:flutter_application_1/banco/DAO/ContractsDAO.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/Banco/entidades/Contract.dart';
@@ -23,7 +24,7 @@ class _WidgetListagemState extends State<WidgetListagem> {
   final TextEditingController _cnpjController = TextEditingController();
   String? _selectedPartnerCount;
   String? _selectedStatus;
-  String? _selectedSort; // 'alphabetical' or null
+  String? _selectedSort;
 
   @override
   void initState() {
@@ -425,6 +426,26 @@ class _WidgetListagemState extends State<WidgetListagem> {
                                       fontSize: 18),
                                 ),
                                 const Spacer(),
+                                // Botão para visualizar detalhes completos
+                                IconButton(
+                                  icon: const Icon(Icons.visibility,
+                                      color: Colors.blue),
+                                  tooltip: 'Ver detalhes do contrato',
+                                  onPressed: () async {
+                                    // carrega sócios e navega para a tela de detalhes
+                                    final partners =
+                                        await _getPartners(contract.id);
+                                    if (!mounted) return;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ContractDetail(
+                                            contract: contract,
+                                            partners: partners),
+                                      ),
+                                    );
+                                  },
+                                ),
                                 IconButton(
                                   icon: const Icon(Icons.delete,
                                       color: Colors.red),

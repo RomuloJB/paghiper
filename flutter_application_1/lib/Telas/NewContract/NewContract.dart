@@ -325,7 +325,7 @@ class _NewContractScreenState extends State<NewContractScreen> {
   }
 
   Widget _buildResultsCard(Map<String, dynamic> data) {
-    final partners = data['partners'] as List;
+    final partners = (data['partners'] as List?) ?? <dynamic>[];
     final currencyFormatter = NumberFormat.currency(
       locale: 'pt_BR',
       symbol: 'R\$',
@@ -335,7 +335,7 @@ class _NewContractScreenState extends State<NewContractScreen> {
       children: [
         Card(
           elevation: 3,
-          color: Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -352,7 +352,8 @@ class _NewContractScreenState extends State<NewContractScreen> {
                 ListTile(
                   leading: const Icon(Icons.business, color: Colors.blueAccent),
                   title: Text(data['company_name'] ?? 'Não informado'),
-                  subtitle: Text(data['filename']),
+                  subtitle:
+                      Text(data['filename'] ?? (_selectedFile?.name ?? '')),
                 ),
                 ListTile(
                   leading: const Icon(Icons.pin, color: Colors.orangeAccent),
@@ -375,12 +376,108 @@ class _NewContractScreenState extends State<NewContractScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                for (var partner in partners)
-                  ListTile(
-                    leading: const Icon(Icons.person, color: Colors.purple),
-                    title: Text(partner['name']),
-                    subtitle: Text(partner['role']),
+
+                if (partners.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text('Nenhum sócio identificado',
+                        style: TextStyle(color: Colors.grey)),
                   ),
+
+                // Detalhes por sócio
+                ...partners.map((p) {
+                  final Map<String, dynamic> partner = (p is Map)
+                      ? Map<String, dynamic>.from(p)
+                      : {'name': p.toString()};
+
+                  final name = partner['name'] ??
+                      partner['nome'] ??
+                      partner['full_name'] ??
+                      'Nome não informado';
+
+                  final role = partner['role'] ??
+                      partner['cargo'] ??
+                      partner['qualification'] ??
+                      partner['position'] ??
+                      null;
+
+                  final cpfCnpj = partner['cpf_cnpj'] ??
+                      partner['cpfCnpj'] ??
+                      partner['cpf'] ??
+                      partner['cnpj'] ??
+                      null;
+
+                  final quotaRaw = partner['quota_percent'] ??
+                      partner['quotaPercent'] ??
+                      partner['quota'] ??
+                      null;
+                  String? quota;
+                  if (quotaRaw != null) {
+                    if (quotaRaw is num) {
+                      quota = '${quotaRaw.toString()}%';
+                    } else {
+                      quota = quotaRaw.toString();
+                    }
+                  }
+
+                  final capitalSubscribedRaw = partner['capital_subscribed'] ??
+                      partner['capitalSubscribed'] ??
+                      null;
+                  String? capitalSubscribed;
+                  if (capitalSubscribedRaw != null) {
+                    try {
+                      final numVal = (capitalSubscribedRaw is num)
+                          ? capitalSubscribedRaw
+                          : num.parse(capitalSubscribedRaw.toString());
+                      capitalSubscribed = currencyFormatter.format(numVal);
+                    } catch (_) {
+                      capitalSubscribed = capitalSubscribedRaw.toString();
+                    }
+                  }
+
+                  final address = partner['address'] ??
+                      partner['endereco'] ??
+                      partner['location'] ??
+                      null;
+
+                  return Padding(
+                    key: ValueKey(name + (cpfCnpj ?? '')),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 6),
+                          if (role != null)
+                            Text('Cargo: $role',
+                                style: const TextStyle(color: Colors.grey)),
+                          if (cpfCnpj != null)
+                            Text('CPF/CNPJ: $cpfCnpj',
+                                style: const TextStyle(color: Colors.grey)),
+                          if (quota != null)
+                            Text('Quota: $quota',
+                                style: const TextStyle(color: Colors.grey)),
+                          if (capitalSubscribed != null)
+                            Text('Capital Subscrito: $capitalSubscribed',
+                                style: const TextStyle(color: Colors.grey)),
+                          if (address != null)
+                            Text('Endereço: $address',
+                                style: const TextStyle(color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ],
             ),
           ),
@@ -395,9 +492,9 @@ class _NewContractScreenState extends State<NewContractScreen> {
                 label: const Text('Analisar Outro Contrato'),
                 onPressed: _resetScreen,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF0857C3),
-                  foregroundColor: Color.fromARGB(255, 255, 255, 255),
-                  minimumSize: Size(200, 50),
+                  backgroundColor: const Color(0xFF0857C3),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(200, 50),
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -410,9 +507,9 @@ class _NewContractScreenState extends State<NewContractScreen> {
                 onPressed: () =>
                     Navigator.of(context).pushNamed(Rotas.dashboard),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF24d17a),
-                  foregroundColor: Color.fromARGB(255, 255, 255, 255),
-                  minimumSize: Size(200, 50),
+                  backgroundColor: const Color(0xFF24d17a),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(200, 50),
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
