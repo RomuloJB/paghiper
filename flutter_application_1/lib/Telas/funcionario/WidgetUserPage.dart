@@ -91,6 +91,19 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   }
 
   Future<void> _editarFuncionario(User funcionario) async {
+    // Verificar se o usuário é admin
+    final user = await _userDao.read(widget.adminUserId);
+    if (user == null || !user.isAdmin) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Apenas administradores podem editar funcionários'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     final nomeController = TextEditingController(text: funcionario.name);
     final emailController = TextEditingController(text: funcionario.email);
     final senhaController = TextEditingController();
@@ -199,6 +212,19 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   }
 
   Future<void> _removerFuncionario(User funcionario) async {
+    // Verificar se o usuário é admin
+    final user = await _userDao.read(widget.adminUserId);
+    if (user == null || !user.isAdmin) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Apenas administradores podem remover funcionários'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -249,6 +275,32 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   }
 
   Future<void> _navegarParaCadastro() async {
+    // Verificar se o usuário é admin antes de navegar
+    final user = await _userDao.read(widget.adminUserId);
+    
+    if (user == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Usuário não encontrado'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (!user.isAdmin) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Apenas administradores podem adicionar funcionários'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     final resultado = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -361,6 +413,20 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      ElevatedButton.icon(
+                        onPressed: _navegarParaCadastro,
+                        icon: const Icon(Icons.person_add),
+                        label: const Text('Adicionar Funcionário'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF24d17a),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       // Dropdown de seleção de empresa
                       Card(
                         elevation: 2,
@@ -413,23 +479,6 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                               });
                               _carregarFuncionarios();
                             },
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Botão adicionar funcionário
-                      ElevatedButton.icon(
-                        onPressed: _navegarParaCadastro,
-                        icon: const Icon(Icons.person_add),
-                        label: const Text('Adicionar Funcionário'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF24d17a),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),

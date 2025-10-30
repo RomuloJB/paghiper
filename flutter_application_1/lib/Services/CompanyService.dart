@@ -54,6 +54,9 @@ class CompanyService {
     if (requestingUser == null) {
       throw Exception('Usuário não encontrado');
     }
+    if (!requestingUser.isAdmin) {
+      throw Exception('Apenas administradores podem listar funcionários');
+    }
 
     return await _userDao.findEmployeesByCompany(companyId);
   }
@@ -68,6 +71,12 @@ class CompanyService {
   }) async {
     // Validar permissão do admin
     final requestingUser = await _userDao.read(requestingUserId);
+    if (requestingUser == null) {
+      throw Exception('Usuário não encontrado');
+    }
+    if (!requestingUser.isAdmin) {
+      throw Exception('Apenas administradores podem adicionar funcionários');
+    }
 
     // Validar email duplicado
     if (await _userDao.emailExists(email)) {
@@ -96,6 +105,12 @@ class CompanyService {
     }
 
     final requestingUser = await _userDao.read(requestingUserId);
+    if (requestingUser == null) {
+      throw Exception('Usuário não encontrado');
+    }
+    if (!requestingUser.isAdmin) {
+      throw Exception('Apenas administradores podem remover funcionários');
+    }
 
     if (employee.isAdmin) {
       throw Exception('Não é possível remover o admin da empresa');
