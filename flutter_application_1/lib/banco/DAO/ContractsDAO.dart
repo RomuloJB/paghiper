@@ -31,7 +31,10 @@ class ContractDao {
   Future<List<Contract>> readAll() async {
     final db = await _dbService.database;
     final List<Map<String, dynamic>> maps = await db.query(tableName);
-    return List.generate(maps.length, (i) => Contract.fromMap(maps[i]));
+
+    final contracts =
+        List.generate(maps.length, (i) => Contract.fromMap(maps[i]));
+    return contracts.reversed.toList();
   }
 
   Future<int> update(Contract contract) async {
@@ -155,8 +158,6 @@ class ContractDao {
           partnerSubquery =
               'id IN (SELECT contract_id FROM partners GROUP BY contract_id HAVING COUNT(*) = ?)';
           args.add(parsed);
-        } else {
-          partnerSubquery = '';
         }
       }
     }
@@ -171,11 +172,14 @@ class ContractDao {
       sql = '$sql WHERE ${allConditions.join(' AND ')}';
     }
 
-    // Ordenação: atualmente apenas ordenação alfabética suportada
+    // Ordenação: se for "alphabetical", usa nome; senão, mais novos primeiro
     if (orderBy != null && orderBy.isNotEmpty) {
       if (orderBy == 'alphabetical') {
         sql = '$sql ORDER BY company_name COLLATE NOCASE ASC';
       }
+    } else {
+      // padrão: mais novos primeiro
+      sql = '$sql ORDER BY id DESC';
     }
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(sql, args);
