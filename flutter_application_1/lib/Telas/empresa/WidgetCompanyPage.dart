@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Banco/entidades/Company.dart';
 import 'package:flutter_application_1/Banco/DAO/CompanyDAO.dart';
 import 'package:flutter_application_1/Telas/empresa/WidgetSignCompany.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 /// Página principal de gerenciamento de empresas
 class WidgetCompanyPage extends StatefulWidget {
@@ -49,7 +50,25 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
 
   Future<void> _editarEmpresa(Company empresa) async {
     final nomeController = TextEditingController(text: empresa.name);
-    final cnpjController = TextEditingController(text: empresa.cnpj ?? '');
+    
+    // Formatar CNPJ se existir (adicionar a máscara)
+    String cnpjFormatado = '';
+    if (empresa.cnpj != null && empresa.cnpj!.isNotEmpty) {
+      final cnpj = empresa.cnpj!.replaceAll(RegExp(r'[^\d]'), ''); // Remove formatação
+      if (cnpj.length == 14) {
+        cnpjFormatado = '${cnpj.substring(0, 2)}.${cnpj.substring(2, 5)}.${cnpj.substring(5, 8)}/${cnpj.substring(8, 12)}-${cnpj.substring(12, 14)}';
+      } else {
+        cnpjFormatado = empresa.cnpj!;
+      }
+    }
+    
+    final cnpjController = TextEditingController(text: cnpjFormatado);
+    
+    // Máscara para CNPJ: 00.000.000/0000-00
+    final cnpjMask = MaskTextInputFormatter(
+      mask: '##.###.###/####-##',
+      filter: {"#": RegExp(r'[0-9]')},
+    );
 
     final resultado = await showDialog<bool>(
       context: context,
@@ -71,8 +90,11 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: cnpjController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [cnpjMask],
                 decoration: InputDecoration(
                   labelText: 'CNPJ (opcional)',
+                  hintText: '00.000.000/0000-00',
                   prefixIcon: const Icon(Icons.badge_outlined, color: Color(0xFF0857C3)),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -103,9 +125,18 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
           throw Exception('Nome da empresa não pode estar vazio');
         }
 
+        // Remover a máscara do CNPJ antes de salvar
+        String? cnpjSemMascara;
+        if (cnpjController.text.trim().isNotEmpty) {
+          cnpjSemMascara = cnpjController.text.replaceAll(RegExp(r'[^\d]'), '');
+          if (cnpjSemMascara.isEmpty) {
+            cnpjSemMascara = null;
+          }
+        }
+
         final empresaAtualizada = empresa.copyWith(
           name: nomeController.text.trim(),
-          cnpj: cnpjController.text.trim().isNotEmpty ? cnpjController.text.trim() : null,
+          cnpj: cnpjSemMascara,
         );
 
         await _companyDAO.update(empresaAtualizada);
