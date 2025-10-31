@@ -1,4 +1,4 @@
-# Projeto: IA para Leitura e Consulta de Contratos Sociais
+# Projeto: Leitura e Consulta de Contratos Sociais
 
 ### Resumo
 Solução de extração automática de informações de contratos sociais de empresas (em PDF digital ou escaneado), retornando um JSON padronizado com campos como CNPJ, razão social, sócios (nome, CPF/CNPJ, participação), administradores, capital social, endereço da sede, objeto social, entre outros. O sistema oferece API para processamento síncrono/assíncrono, dashboard de revisão humana e validação automática (checksums de CPF/CNPJ, normalização e consistência).
