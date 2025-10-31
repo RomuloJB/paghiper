@@ -435,6 +435,62 @@ class DatabaseService {
       'address': null,
     });
 
+    await db.insert('users', {
+      'name': 'Romulo',
+      'email': 'rom@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 4
+    });
+
+    await db.insert('users', {
+      'name': 'Gabriela',
+      'email': 'gab@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 4
+    });
+
+    await db.insert('users', {
+      'name': 'Caue',
+      'email': 'cau@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 4
+    });
+
+    await db.insert('users', {
+      'name': 'Maria',
+      'email': 'mar@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 3
+    });
+
+    await db.insert('users', {
+      'name': 'Joao',
+      'email': 'joa@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 3
+    });
+
+    await db.insert('users', {
+      'name': 'Rafael',
+      'email': 'raf@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 5
+    });
+
+    await db.insert('users', {
+      'name': 'Ariel',
+      'email': 'ari@gmail.com',
+      'password': 'aaaaaa',
+      'role': 'user',
+      'company_id': 5
+    });
+
     print('Seed completo! 3 contratos e 4 sócios inseridos com sucesso!');
     print('Tabelas criadas com sucesso!');
   }

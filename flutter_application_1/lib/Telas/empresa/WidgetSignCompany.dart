@@ -16,6 +16,7 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
   final _cnpjController = TextEditingController();
+  final _anoController = TextEditingController();
   final _companyService = CompanyService();
   bool _isLoading = false;
 
@@ -46,14 +47,15 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),    
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
 
       // Limpar campos
       _nomeController.clear();
       _cnpjController.clear();
-      
+
       // Retornar true para indicar sucesso (para quando for usado como página de navegação)
       Navigator.pop(context, true);
     } catch (e) {
@@ -64,7 +66,8 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     } finally {
@@ -161,9 +164,10 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
                       filled: true,
                       fillColor: Colors.grey[50],
                     ),
-                    validator: (value) => (value == null || value.trim().isEmpty)
-                        ? 'Informe o nome da empresa'
-                        : null,
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty)
+                            ? 'Informe o nome da empresa'
+                            : null,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -206,7 +210,8 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
                     ),
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
-                        final cnpjDigits = value.replaceAll(RegExp(r'[^\d]'), '');
+                        final cnpjDigits =
+                            value.replaceAll(RegExp(r'[^\d]'), '');
                         if (cnpjDigits.length != 14) {
                           return 'CNPJ deve ter 14 dígitos';
                         }
@@ -214,6 +219,32 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
                       return null;
                     },
                   ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                      controller: _anoController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: ('Ano de Fundação'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE0E0E0),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE0E0E0),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF0857C3),
+                            width: 2,
+                          ),
+                        ),
+                      )),
                   const SizedBox(height: 28),
                   SizedBox(
                     width: double.infinity,

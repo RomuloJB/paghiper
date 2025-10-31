@@ -28,7 +28,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   Company? _empresaSelecionada;
   List<User> _allFuncionarios = [];
   User? _selectedFuncionario;
-  
+
   bool _isLoadingCompanies = true;
   bool _isLoadingFuncionarios = false;
 
@@ -48,7 +48,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
           _empresaSelecionada = companies.first;
         }
       });
-      
+
       if (_empresaSelecionada != null) {
         _carregarFuncionarios();
       }
@@ -67,7 +67,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
 
   Future<void> _carregarFuncionarios() async {
     if (_empresaSelecionada == null) return;
-    
+
     setState(() => _isLoadingFuncionarios = true);
     try {
       final funcionarios = await _companyService.listEmployees(
@@ -121,8 +121,10 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                 controller: nomeController,
                 decoration: InputDecoration(
                   labelText: 'Nome',
-                  prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF0857C3)),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.person_outline,
+                      color: Color(0xFF0857C3)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -131,8 +133,10 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
-                  prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF0857C3)),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.email_outlined,
+                      color: Color(0xFF0857C3)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -141,8 +145,10 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Nova Senha (opcional)',
-                  prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF0857C3)),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon:
+                      const Icon(Icons.lock_outline, color: Color(0xFF0857C3)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
@@ -180,7 +186,9 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
         final funcionarioAtualizado = funcionario.copyWith(
           name: nomeController.text.trim(),
           email: emailController.text.trim().toLowerCase(),
-          password: senhaController.text.isNotEmpty ? senhaController.text : funcionario.password,
+          password: senhaController.text.isNotEmpty
+              ? senhaController.text
+              : funcionario.password,
         );
 
         await _userDao.update(funcionarioAtualizado);
@@ -188,7 +196,8 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${funcionarioAtualizado.name} atualizado com sucesso'),
+            content:
+                Text('${funcionarioAtualizado.name} atualizado com sucesso'),
             backgroundColor: Colors.green,
           ),
         );
@@ -277,7 +286,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
   Future<void> _navegarParaCadastro() async {
     // Verificar se o usuário é admin antes de navegar
     final user = await _userDao.read(widget.adminUserId);
-    
+
     if (user == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -288,7 +297,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
       );
       return;
     }
-    
+
     if (!user.isAdmin) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -524,7 +533,7 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Dropdown com busca integrada
                               if (_isLoadingFuncionarios)
                                 const Center(
@@ -560,21 +569,31 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                 )
                               else
                                 Autocomplete<User>(
-                                  optionsBuilder: (TextEditingValue textEditingValue) {
+                                  optionsBuilder:
+                                      (TextEditingValue textEditingValue) {
                                     if (textEditingValue.text.isEmpty) {
                                       return _allFuncionarios;
                                     }
-                                    final query = textEditingValue.text.toLowerCase();
-                                    return _allFuncionarios.where((User funcionario) {
-                                      final nomeMatch = funcionario.name?.toLowerCase().contains(query) ?? false;
-                                      final idMatch = funcionario.id?.toString().contains(query) ?? false;
+                                    final query =
+                                        textEditingValue.text.toLowerCase();
+                                    return _allFuncionarios
+                                        .where((User funcionario) {
+                                      final nomeMatch = funcionario.name
+                                              ?.toLowerCase()
+                                              .contains(query) ??
+                                          false;
+                                      final idMatch = funcionario.id
+                                              ?.toString()
+                                              .contains(query) ??
+                                          false;
                                       return nomeMatch || idMatch;
                                     });
                                   },
                                   displayStringForOption: (User funcionario) =>
                                       '${funcionario.name} (ID: ${funcionario.id})',
                                   onSelected: (User funcionario) {
-                                    setState(() => _selectedFuncionario = funcionario);
+                                    setState(() =>
+                                        _selectedFuncionario = funcionario);
                                   },
                                   fieldViewBuilder: (
                                     BuildContext context,
@@ -592,12 +611,15 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                           Icons.search,
                                           color: Color(0xFF0857C3),
                                         ),
-                                        suffixIcon: textEditingController.text.isNotEmpty
+                                        suffixIcon: textEditingController
+                                                .text.isNotEmpty
                                             ? IconButton(
                                                 icon: const Icon(Icons.clear),
                                                 onPressed: () {
                                                   textEditingController.clear();
-                                                  setState(() => _selectedFuncionario = null);
+                                                  setState(() =>
+                                                      _selectedFuncionario =
+                                                          null);
                                                 },
                                               )
                                             : const Icon(
@@ -605,19 +627,22 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                                 color: Color(0xFF0857C3),
                                               ),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           borderSide: const BorderSide(
                                             color: Color(0xFFE0E0E0),
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           borderSide: const BorderSide(
                                             color: Color(0xFFE0E0E0),
                                           ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           borderSide: const BorderSide(
                                             color: Color(0xFF0857C3),
                                             width: 2,
@@ -639,25 +664,34 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                         elevation: 4.0,
                                         borderRadius: BorderRadius.circular(12),
                                         child: Container(
-                                          constraints: const BoxConstraints(maxHeight: 300),
-                                          width: MediaQuery.of(context).size.width - 88,
+                                          constraints: const BoxConstraints(
+                                              maxHeight: 300),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              88,
                                           child: ListView.builder(
                                             padding: EdgeInsets.zero,
                                             shrinkWrap: true,
                                             itemCount: options.length,
-                                            itemBuilder: (BuildContext context, int index) {
-                                              final User funcionario = options.elementAt(index);
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              final User funcionario =
+                                                  options.elementAt(index);
                                               return InkWell(
-                                                onTap: () => onSelected(funcionario),
+                                                onTap: () =>
+                                                    onSelected(funcionario),
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
                                                     horizontal: 16,
                                                     vertical: 12,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     border: Border(
                                                       bottom: BorderSide(
-                                                        color: Colors.grey[200]!,
+                                                        color:
+                                                            Colors.grey[200]!,
                                                         width: 1,
                                                       ),
                                                     ),
@@ -666,15 +700,20 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                                     children: [
                                                       CircleAvatar(
                                                         radius: 20,
-                                                        backgroundColor: const Color(0xFF0857C3),
+                                                        backgroundColor:
+                                                            const Color(
+                                                                0xFF0857C3),
                                                         child: Text(
                                                           funcionario.name
-                                                                  ?.substring(0, 1)
+                                                                  ?.substring(
+                                                                      0, 1)
                                                                   .toUpperCase() ??
                                                               '?',
-                                                          style: const TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             color: Colors.white,
-                                                            fontWeight: FontWeight.bold,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             fontSize: 16,
                                                           ),
                                                         ),
@@ -683,21 +722,29 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                                       Expanded(
                                                         child: Column(
                                                           crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
+                                                              CrossAxisAlignment
+                                                                  .start,
                                                           children: [
                                                             Text(
-                                                              funcionario.name ?? 'Sem nome',
-                                                              style: const TextStyle(
-                                                                fontWeight: FontWeight.w500,
+                                                              funcionario
+                                                                      .name ??
+                                                                  'Sem nome',
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
                                                                 fontSize: 14,
                                                               ),
                                                             ),
-                                                            const SizedBox(height: 2),
+                                                            const SizedBox(
+                                                                height: 2),
                                                             Text(
                                                               'ID: ${funcionario.id}',
                                                               style: TextStyle(
                                                                 fontSize: 12,
-                                                                color: Colors.grey[600],
+                                                                color: Colors
+                                                                    .grey[600],
                                                               ),
                                                             ),
                                                           ],
@@ -792,7 +839,8 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                         color: Color(0xFFFF9100),
                                         size: 28,
                                       ),
-                                      onPressed: () => _editarFuncionario(_selectedFuncionario!),
+                                      onPressed: () => _editarFuncionario(
+                                          _selectedFuncionario!),
                                       tooltip: 'Editar',
                                     ),
                                     const SizedBox(width: 8),
@@ -802,7 +850,8 @@ class _WidgetUserPageState extends State<WidgetUserPage> {
                                         color: Colors.red,
                                         size: 28,
                                       ),
-                                      onPressed: () => _removerFuncionario(_selectedFuncionario!),
+                                      onPressed: () => _removerFuncionario(
+                                          _selectedFuncionario!),
                                       tooltip: 'Remover',
                                     ),
                                   ],

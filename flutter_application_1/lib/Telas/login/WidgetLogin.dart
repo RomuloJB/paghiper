@@ -87,7 +87,7 @@ class WidgetLogin extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     const Text(
-                      'IA PagHiper',
+                      'PagHiper',
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class WidgetLogin extends StatelessWidget {
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w400,
-                      ),  
+                      ),
                     ),
                     const SizedBox(height: 48),
                     Card(

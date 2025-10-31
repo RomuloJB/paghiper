@@ -18,7 +18,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'IA PagHiper',
+      title: 'PagHiper',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         appBarTheme: const AppBarTheme(
@@ -46,8 +46,7 @@ class App extends StatelessWidget {
         Rotas.listagem: (context) => const WidgetListagem(),
         Rotas.unifiedContract: (context) => const UnifiedContractScreen(),
         Rotas.protocolSearch: (context) => const ProtocolSearchScreen(),
-        Rotas.signNewUser: (context) =>
-            const WidgetSignUser(adminUserId: 1),
+        Rotas.signNewUser: (context) => const WidgetSignUser(adminUserId: 1),
         Rotas.usersPage: (context) => const WidgetUserPage(adminUserId: 1),
         Rotas.companiesPage: (context) => const WidgetCompanyPage(),
         Rotas.signNewCompany: (context) => const WidgetSignCompany(),
