@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Services/AuthProvider.dart';
 import 'package:flutter_application_1/Services/CompanyService.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:provider/provider.dart';
 
 /// Tela para admin cadastrar sua empresa
 class WidgetSignCompany extends StatefulWidget {
@@ -17,6 +19,7 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
   final _nomeController = TextEditingController();
   final _cnpjController = TextEditingController();
   final _anoController = TextEditingController();
+  final _hashController = TextEditingController();
   final _companyService = CompanyService();
   bool _isLoading = false;
 
@@ -30,13 +33,15 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+    final auth = Provider.of<AuthProvider>(context, listen: false);
 
     try {
       final company = await _companyService.createCompany(
         name: _nomeController.text.trim(),
         cnpj: _cnpjController.text
             .replaceAll(RegExp(r'[^\d]'), ''), // Remove máscara
-        adminUserId: 1, // TODO: Obter do usuário logado
+        adminUserId: auth.userId, // Obter do usuário logado
+        hash: _hashController.text.trim(),
       );
 
       if (!mounted) return;
@@ -219,12 +224,45 @@ class _WidgetSignCompanyState extends State<WidgetSignCompany> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 12),
                   TextFormField(
                       controller: _anoController,
                       keyboardType: TextInputType.number,
+                      maxLength: 4,
                       decoration: InputDecoration(
                         labelText: ('Ano de Fundação'),
+                        prefixIcon: const Icon(
+                          Icons.calendar_today_outlined,
+                          color: Color(0xFF0857C3),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE0E0E0),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE0E0E0),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF0857C3),
+                            width: 2,
+                          ),
+                        ),
+                      )),
+                  TextFormField(
+                      controller: _hashController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: ('Hash da IA'),
+                        prefixIcon: const Icon(
+                          Icons.key_outlined,
+                          color: Color(0xFF0857C3),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(

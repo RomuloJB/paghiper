@@ -19,7 +19,7 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
 
   List<Company> _allCompanies = [];
   Company? _selectedCompany;
-  
+
   bool _isLoadingCompanies = true;
 
   @override
@@ -50,20 +50,22 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
 
   Future<void> _editarEmpresa(Company empresa) async {
     final nomeController = TextEditingController(text: empresa.name);
-    
+
     // Formatar CNPJ se existir (adicionar a máscara)
     String cnpjFormatado = '';
     if (empresa.cnpj != null && empresa.cnpj!.isNotEmpty) {
-      final cnpj = empresa.cnpj!.replaceAll(RegExp(r'[^\d]'), ''); // Remove formatação
+      final cnpj =
+          empresa.cnpj!.replaceAll(RegExp(r'[^\d]'), ''); // Remove formatação
       if (cnpj.length == 14) {
-        cnpjFormatado = '${cnpj.substring(0, 2)}.${cnpj.substring(2, 5)}.${cnpj.substring(5, 8)}/${cnpj.substring(8, 12)}-${cnpj.substring(12, 14)}';
+        cnpjFormatado =
+            '${cnpj.substring(0, 2)}.${cnpj.substring(2, 5)}.${cnpj.substring(5, 8)}/${cnpj.substring(8, 12)}-${cnpj.substring(12, 14)}';
       } else {
         cnpjFormatado = empresa.cnpj!;
       }
     }
-    
+
     final cnpjController = TextEditingController(text: cnpjFormatado);
-    
+
     // Máscara para CNPJ: 00.000.000/0000-00
     final cnpjMask = MaskTextInputFormatter(
       mask: '##.###.###/####-##',
@@ -83,8 +85,10 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                 controller: nomeController,
                 decoration: InputDecoration(
                   labelText: 'Nome da Empresa',
-                  prefixIcon: const Icon(Icons.business_outlined, color: Color(0xFF0857C3)),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.business_outlined,
+                      color: Color(0xFF0857C3)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -95,8 +99,10 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                 decoration: InputDecoration(
                   labelText: 'CNPJ (opcional)',
                   hintText: '00.000.000/0000-00',
-                  prefixIcon: const Icon(Icons.badge_outlined, color: Color(0xFF0857C3)),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.badge_outlined,
+                      color: Color(0xFF0857C3)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
@@ -170,13 +176,14 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
     // Verificar se tem funcionários vinculados
     try {
       final numFuncionarios = await _companyDAO.countEmployees(empresa.id!);
-      
+
       if (numFuncionarios > 0) {
         if (!mounted) return;
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: const Text('Não é possível remover'),
             content: Text(
               'A empresa "${empresa.name}" possui $numFuncionarios funcionário(s) vinculado(s). '
@@ -324,7 +331,8 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF0857C3).withOpacity(0.1),
+                                  color:
+                                      const Color(0xFF0857C3).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
@@ -345,7 +353,7 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                             ],
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Dropdown com busca integrada
                           if (_isLoadingCompanies)
                             const Center(
@@ -371,15 +379,21 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                             )
                           else
                             Autocomplete<Company>(
-                              optionsBuilder: (TextEditingValue textEditingValue) {
+                              optionsBuilder:
+                                  (TextEditingValue textEditingValue) {
                                 if (textEditingValue.text.isEmpty) {
                                   return _allCompanies;
                                 }
-                                final query = textEditingValue.text.toLowerCase();
+                                final query =
+                                    textEditingValue.text.toLowerCase();
                                 return _allCompanies.where((empresa) {
-                                  final nomeMatch = empresa.name.toLowerCase().contains(query);
-                                  final idMatch = empresa.id.toString().contains(query);
-                                  final cnpjMatch = empresa.cnpj?.contains(query) ?? false;
+                                  final nomeMatch = empresa.name
+                                      .toLowerCase()
+                                      .contains(query);
+                                  final idMatch =
+                                      empresa.id.toString().contains(query);
+                                  final cnpjMatch =
+                                      empresa.cnpj?.contains(query) ?? false;
                                   return nomeMatch || idMatch || cnpjMatch;
                                 });
                               },
@@ -400,25 +414,27 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                   controller: textEditingController,
                                   focusNode: focusNode,
                                   decoration: InputDecoration(
-                                    labelText: 'Digite o nome, ID ou CNPJ da empresa',
+                                    labelText:
+                                        'Digite o nome, ID ou CNPJ da empresa',
                                     prefixIcon: const Icon(
                                       Icons.business_outlined,
                                       color: Color(0xFF0857C3),
                                     ),
-                                    suffixIcon: textEditingController.text.isNotEmpty
-                                        ? IconButton(
-                                            icon: const Icon(Icons.clear),
-                                            onPressed: () {
-                                              textEditingController.clear();
-                                              setState(() {
-                                                _selectedCompany = null;
-                                              });
-                                            },
-                                          )
-                                        : const Icon(
-                                            Icons.arrow_drop_down,
-                                            color: Color(0xFF0857C3),
-                                          ),
+                                    suffixIcon:
+                                        textEditingController.text.isNotEmpty
+                                            ? IconButton(
+                                                icon: const Icon(Icons.clear),
+                                                onPressed: () {
+                                                  textEditingController.clear();
+                                                  setState(() {
+                                                    _selectedCompany = null;
+                                                  });
+                                                },
+                                              )
+                                            : const Icon(
+                                                Icons.arrow_drop_down,
+                                                color: Color(0xFF0857C3),
+                                              ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: const BorderSide(
@@ -462,12 +478,15 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                         padding: const EdgeInsets.all(8),
                                         shrinkWrap: true,
                                         itemCount: options.length,
-                                        itemBuilder: (BuildContext context, int index) {
-                                          final empresa = options.elementAt(index);
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          final empresa =
+                                              options.elementAt(index);
                                           return InkWell(
                                             onTap: () => onSelected(empresa),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
                                                 vertical: 12,
                                                 horizontal: 16,
                                               ),
@@ -482,25 +501,33 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                               child: Row(
                                                 children: [
                                                   CircleAvatar(
-                                                    backgroundColor: const Color(0xFF0857C3),
+                                                    backgroundColor:
+                                                        const Color(0xFF0857C3),
                                                     radius: 20,
                                                     child: Text(
-                                                      empresa.name.substring(0, 1).toUpperCase(),
+                                                      empresa.name
+                                                          .substring(0, 1)
+                                                          .toUpperCase(),
                                                       style: const TextStyle(
                                                         color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),
                                                   Expanded(
                                                     child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Text(
                                                           empresa.name,
-                                                          style: const TextStyle(
-                                                            fontWeight: FontWeight.bold,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             fontSize: 14,
                                                           ),
                                                         ),
@@ -508,7 +535,8 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                                           'ID: ${empresa.id}${empresa.cnpj != null ? ' • CNPJ: ${empresa.cnpj}' : ''}',
                                                           style: TextStyle(
                                                             fontSize: 12,
-                                                            color: Colors.grey[600],
+                                                            color: Colors
+                                                                .grey[600],
                                                           ),
                                                         ),
                                                       ],
@@ -532,7 +560,75 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
 
                   const SizedBox(height: 20),
 
-                  // Card com dados da empresa selecionada
+                  // Seção: Todas as Empresas
+                  if (_allCompanies.isNotEmpty) ...[
+                    Row(
+                      children: [
+                        const Text(
+                          'Todas as Empresas',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF212121),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0857C3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${_allCompanies.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Grid de empresas
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final crossAxisCount = constraints.maxWidth > 1000
+                            ? 3
+                            : constraints.maxWidth > 600
+                                ? 2
+                                : 1;
+
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.5,
+                          ),
+                          itemCount: _allCompanies.length,
+                          itemBuilder: (context, index) {
+                            final empresa = _allCompanies[index];
+                            final isSelected =
+                                _selectedCompany?.id == empresa.id;
+
+                            return _buildCompanyCard(empresa, isSelected);
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Card com dados da empresa selecionada (detalhado)
                   if (_selectedCompany != null)
                     Card(
                       elevation: 2,
@@ -551,7 +647,9 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                   backgroundColor: const Color(0xFF0857C3),
                                   radius: 30,
                                   child: Text(
-                                    _selectedCompany!.name.substring(0, 1).toUpperCase(),
+                                    _selectedCompany!.name
+                                        .substring(0, 1)
+                                        .toUpperCase(),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -562,7 +660,8 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _selectedCompany!.name,
@@ -588,7 +687,8 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                     Icons.edit,
                                     color: Color.fromARGB(255, 255, 145, 0),
                                   ),
-                                  onPressed: () => _editarEmpresa(_selectedCompany!),
+                                  onPressed: () =>
+                                      _editarEmpresa(_selectedCompany!),
                                   tooltip: 'Editar',
                                 ),
                                 IconButton(
@@ -596,7 +696,8 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                                     Icons.delete,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () => _removerEmpresa(_selectedCompany!),
+                                  onPressed: () =>
+                                      _removerEmpresa(_selectedCompany!),
                                   tooltip: 'Remover',
                                 ),
                               ],
@@ -604,7 +705,7 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
                             const SizedBox(height: 20),
                             const Divider(),
                             const SizedBox(height: 16),
-                            
+
                             // Informações detalhadas
                             _buildInfoRow(
                               Icons.badge_outlined,
@@ -662,5 +763,216 @@ class _WidgetCompanyPageState extends State<WidgetCompanyPage> {
         ),
       ],
     );
+  }
+
+  Widget _buildCompanyCard(Company empresa, bool isSelected) {
+    return Card(
+      elevation: isSelected ? 4 : 2,
+      shadowColor: isSelected
+          ? const Color(0xFF0857C3).withOpacity(0.3)
+          : Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isSelected ? const Color(0xFF0857C3) : Colors.transparent,
+          width: 2,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          setState(() {
+            _selectedCompany = empresa;
+          });
+          // Scroll para o card de detalhes
+          Future.delayed(const Duration(milliseconds: 100), () {
+            Scrollable.ensureVisible(
+              context,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header com avatar e ações
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: isSelected
+                        ? const Color(0xFF0857C3)
+                        : const Color(0xFF24d17a),
+                    radius: 24,
+                    child: Text(
+                      empresa.name.substring(0, 1).toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  // Botões de ação
+                  PopupMenuButton<String>(
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color(0xFF757575),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    onSelected: (value) {
+                      if (value == 'editar') {
+                        _editarEmpresa(empresa);
+                      } else if (value == 'remover') {
+                        _removerEmpresa(empresa);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'editar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.orange, size: 20),
+                            SizedBox(width: 12),
+                            Text('Editar'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'remover',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red, size: 20),
+                            SizedBox(width: 12),
+                            Text('Remover'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Nome da empresa
+              Text(
+                empresa.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF212121),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+
+              // ID e CNPJ
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0857C3).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'ID: ${empresa.id}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0857C3),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              if (empresa.cnpj != null && empresa.cnpj!.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.badge_outlined,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        _formatarCNPJ(empresa.cnpj!),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[700],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  'CNPJ não informado',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+
+              const Spacer(),
+
+              // Data de criação
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                    color: Colors.grey[500],
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Criada: ${_formatarData(empresa.createdAt)}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatarCNPJ(String cnpj) {
+    // Remove tudo que não é número
+    final numeros = cnpj.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (numeros.length == 14) {
+      return '${numeros.substring(0, 2)}.${numeros.substring(2, 5)}.${numeros.substring(5, 8)}/${numeros.substring(8, 12)}-${numeros.substring(12, 14)}';
+    }
+
+    return cnpj; // Retorna original se não tiver 14 dígitos
+  }
+
+  String _formatarData(String data) {
+    try {
+      final dateTime = DateTime.parse(data);
+      return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
+    } catch (e) {
+      return data;
+    }
   }
 }

@@ -10,6 +10,8 @@ import 'package:flutter_application_1/Telas/funcionario/WidgetSignUser.dart';
 import 'package:flutter_application_1/Telas/funcionario/WidgetUserPage.dart';
 import 'package:flutter_application_1/Telas/protocol/ProtocolSearchScreen.dart';
 import 'package:flutter_application_1/Telas/unifiedContract/UnifiedContractScreen.dart';
+import 'package:flutter_application_1/Telas/InitialScreen.dart';
+import 'package:flutter_application_1/Utils/AuthGuard.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class App extends StatelessWidget {
@@ -22,7 +24,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF34302D),
+          backgroundColor: Color(0xFF0857C3),
           titleTextStyle: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -32,7 +34,7 @@ class App extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromARGB(255, 216, 216, 216),
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: Rotas.login,
+      initialRoute: Rotas.home,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -40,16 +42,39 @@ class App extends StatelessWidget {
       ],
       supportedLocales: const [Locale('pt', 'BR')],
       routes: {
+        Rotas.home: (context) => const InitialScreen(),
         Rotas.login: (context) => const WidgetLogin(),
-        Rotas.dashboard: (context) => const WidgetDashboard(),
-        Rotas.upload: (context) => const NewContractScreen(),
-        Rotas.listagem: (context) => const WidgetListagem(),
-        Rotas.unifiedContract: (context) => const UnifiedContractScreen(),
-        Rotas.protocolSearch: (context) => const ProtocolSearchScreen(),
-        Rotas.signNewUser: (context) => const WidgetSignUser(adminUserId: 1),
-        Rotas.usersPage: (context) => const WidgetUserPage(adminUserId: 1),
-        Rotas.companiesPage: (context) => const WidgetCompanyPage(),
-        Rotas.signNewCompany: (context) => const WidgetSignCompany(),
+
+        // Rotas protegidas (requerem autenticação)
+        Rotas.dashboard: (context) => const AuthenticatedRoute(
+              child: WidgetDashboard(),
+            ),
+        Rotas.upload: (context) => const AuthenticatedRoute(
+              child: NewContractScreen(),
+            ),
+        Rotas.listagem: (context) => const AuthenticatedRoute(
+              child: WidgetListagem(),
+            ),
+        Rotas.unifiedContract: (context) => const AuthenticatedRoute(
+              child: UnifiedContractScreen(),
+            ),
+        Rotas.protocolSearch: (context) => const AuthenticatedRoute(
+              child: ProtocolSearchScreen(),
+            ),
+
+        // Rotas administrativas (requerem role admin)
+        Rotas.signNewUser: (context) => const AdminRoute(
+              child: WidgetSignUser(adminUserId: 1),
+            ),
+        Rotas.usersPage: (context) => const AdminRoute(
+              child: WidgetUserPage(adminUserId: 1),
+            ),
+        Rotas.companiesPage: (context) => const AdminRoute(
+              child: WidgetCompanyPage(),
+            ),
+        Rotas.signNewCompany: (context) => const AdminRoute(
+              child: WidgetSignCompany(),
+            ),
       },
     );
   }

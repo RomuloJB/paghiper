@@ -13,6 +13,7 @@ class CompanyDao {
       'name': company.name,
       'cnpj': company.cnpj,
       'created_at': company.createdAt,
+      'hash': company.hash,
     });
   }
 
@@ -47,6 +48,7 @@ class CompanyDao {
       {
         'name': company.name,
         'cnpj': company.cnpj,
+        'hash': company.hash,
       },
       where: 'id = ?',
       whereArgs: [company.id],

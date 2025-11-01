@@ -5,6 +5,7 @@ class DashboardMetricsSection extends StatelessWidget {
   final int totalContratos;
   final int totalProcessados;
   final int totalFalhas;
+  final int totalPendentes;
   final double mediaCapitalSocial;
   final bool isLoading;
 
@@ -12,6 +13,7 @@ class DashboardMetricsSection extends StatelessWidget {
     Key? key,
     required this.totalContratos,
     required this.totalProcessados,
+    required this.totalPendentes,
     required this.totalFalhas,
     required this.mediaCapitalSocial,
     this.isLoading = false,
@@ -31,8 +33,8 @@ class DashboardMetricsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Visão Geral',
+        Text(
+          'Visão Geral - Total de Contratos: ${totalContratos.toString()}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -44,12 +46,6 @@ class DashboardMetricsSection extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: [
-            MetricCard(
-              label: "Total de Contratos",
-              value: totalContratos.toString(),
-              color: const Color(0xFF0857C3),
-              icon: Icons.description,
-            ),
             MetricCard(
               label: "Processados",
               value: totalProcessados.toString(),
@@ -63,10 +59,10 @@ class DashboardMetricsSection extends StatelessWidget {
               icon: Icons.error,
             ),
             MetricCard(
-              label: "Média Capital",
-              value: "R\$ ${mediaCapitalSocial.toStringAsFixed(0)}",
-              color: const Color(0xFFFF9800),
-              icon: Icons.trending_up,
+              label: "Pendentes",
+              value: totalPendentes.toString(),
+              color: Colors.orangeAccent,
+              icon: Icons.hourglass_top,
             ),
           ],
         ),

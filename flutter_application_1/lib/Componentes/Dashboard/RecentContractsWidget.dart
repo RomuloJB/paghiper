@@ -20,7 +20,9 @@ class RecentContractsWidget extends StatelessWidget {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(32),
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color(0xFF0857C3),
+          ),
         ),
       );
     }
@@ -29,7 +31,7 @@ class RecentContractsWidget extends StatelessWidget {
       return _buildEmptyState();
     }
 
-    final recentContracts = contracts.take(5).toList();
+    final recentContracts = contracts.take(10).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,113 +39,191 @@ class RecentContractsWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Contratos Recentes',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF212121),
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0857C3).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.receipt_long,
+                    color: Color(0xFF0857C3),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Contratos Recentes',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF212121),
+                  ),
+                ),
+              ],
             ),
-            if (contracts.length > 5 && onViewAll != null)
+            if (contracts.length > 10 && onViewAll != null)
               TextButton.icon(
-                icon: const Icon(Icons.arrow_forward, size: 18),
+                icon: const Icon(Icons.arrow_forward, size: 16),
                 label: const Text('Ver Todos'),
                 onPressed: onViewAll,
                 style: TextButton.styleFrom(
                   foregroundColor: const Color(0xFF0857C3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+        const SizedBox(height: 16),
+
+        // Tabela responsiva
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 600;
+
+            return Card(
+              elevation: 2,
+              shadowColor: Colors.black.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0857C3).withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey.shade200,
+                    width: 1,
                   ),
                 ),
-                child: Row(
-                  children: const [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        'Empresa',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Color(0xFF0857C3),
+                child: Column(
+                  children: [
+                    // Header da tabela
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF0857C3).withOpacity(0.1),
+                            const Color(0xFF0857C3).withOpacity(0.05),
+                          ],
                         ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(11),
+                          topRight: Radius.circular(11),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          if (isWide) ...[
+                            const SizedBox(
+                              width: 40,
+                              child: Text(
+                                '#',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: Color(0xFF0857C3),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const Expanded(
+                            flex: 3,
+                            child: Text(
+                              'EMPRESA',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                                color: Color(0xFF0857C3),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          if (isWide) ...[
+                            const Expanded(
+                              flex: 2,
+                              child: Text(
+                                'CNPJ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: Color(0xFF0857C3),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const Expanded(
+                            flex: 2,
+                            child: Text(
+                              'DATA',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                                color: Color(0xFF0857C3),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 90,
+                            child: Text(
+                              'STATUS',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                                color: Color(0xFF0857C3),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        'CNPJ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Color(0xFF0857C3),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Data',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Color(0xFF0857C3),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 80,
-                      child: Text(
-                        'Status',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Color(0xFF0857C3),
-                        ),
-                      ),
+
+                    // Linhas da tabela
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: recentContracts.length,
+                      itemBuilder: (context, index) {
+                        final contract = recentContracts[index];
+                        final isLast = index == recentContracts.length - 1;
+                        return _buildContractRow(
+                          contract,
+                          index + 1,
+                          isWide,
+                          isLast,
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recentContracts.length,
-                separatorBuilder: (context, index) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final contract = recentContracts[index];
-                  return _buildContractRow(contract);
-                },
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ],
     );
   }
 
-  Widget _buildContractRow(Contract contract) {
-    final dateFormat = DateFormat('dd/MM/yy HH:mm');
+  Widget _buildContractRow(
+    Contract contract,
+    int index,
+    bool isWide,
+    bool isLast,
+  ) {
+    final dateFormat = DateFormat('dd/MM/yy');
+    final timeFormat = DateFormat('HH:mm');
     Color statusColor;
     IconData statusIcon;
     String statusLabel;
@@ -152,7 +232,7 @@ class RecentContractsWidget extends StatelessWidget {
       case 'processed':
         statusColor = const Color(0xFF24d17a);
         statusIcon = Icons.check_circle;
-        statusLabel = 'OK';
+        statusLabel = 'Sucesso';
         break;
       case 'failed':
         statusColor = Colors.redAccent;
@@ -170,12 +250,45 @@ class RecentContractsWidget extends StatelessWidget {
         statusLabel = 'N/A';
     }
 
+    final uploadDate = DateTime.parse(contract.uploadedAt);
+
     return InkWell(
       onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: index % 2 == 0 ? Colors.white : Colors.grey.shade50,
+          border: Border(
+            bottom: BorderSide(
+              color: isLast ? Colors.transparent : Colors.grey.shade200,
+              width: 1,
+            ),
+          ),
+          borderRadius: isLast
+              ? const BorderRadius.only(
+                  bottomLeft: Radius.circular(11),
+                  bottomRight: Radius.circular(11),
+                )
+              : null,
+        ),
         child: Row(
           children: [
+            // Número
+            if (isWide) ...[
+              SizedBox(
+                width: 40,
+                child: Text(
+                  '#$index',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+
+            // Empresa
             Expanded(
               flex: 3,
               child: Column(
@@ -184,62 +297,116 @@ class RecentContractsWidget extends StatelessWidget {
                   Text(
                     contract.companyName ?? contract.filename,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF212121),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (contract.companyName != null &&
-                      contract.filename != contract.companyName)
+                  if (!isWide && contract.cnpj != null) ...[
+                    const SizedBox(height: 2),
                     Text(
-                      contract.filename,
-                      style: const TextStyle(
+                      _formatarCNPJ(contract.cnpj!),
+                      style: TextStyle(
                         fontSize: 11,
-                        color: Color(0xFF757575),
+                        color: Colors.grey[600],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
+                  ],
                 ],
               ),
             ),
+
+            // CNPJ (apenas em telas largas)
+            if (isWide) ...[
+              Expanded(
+                flex: 2,
+                child: Text(
+                  contract.cnpj != null ? _formatarCNPJ(contract.cnpj!) : '-',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[700],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+
+            // Data
             Expanded(
               flex: 2,
-              child: Text(
-                contract.cnpj ?? '-',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF757575)),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                dateFormat.format(DateTime.parse(contract.uploadedAt)),
-                style: const TextStyle(fontSize: 12, color: Color(0xFF757575)),
-              ),
-            ),
-            SizedBox(
-              width: 80,
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(statusIcon, size: 16, color: statusColor),
-                  const SizedBox(width: 4),
                   Text(
-                    statusLabel,
+                    dateFormat.format(uploadDate),
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: statusColor,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    timeFormat.format(uploadDate),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[500],
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            // Status
+            SizedBox(
+              width: 90,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: statusColor.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(statusIcon, size: 14, color: statusColor),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        statusLabel,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: statusColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _formatarCNPJ(String cnpj) {
+    final numeros = cnpj.replaceAll(RegExp(r'[^\d]'), '');
+    if (numeros.length == 14) {
+      return '${numeros.substring(0, 2)}.${numeros.substring(2, 5)}.${numeros.substring(5, 8)}/${numeros.substring(8, 12)}-${numeros.substring(12, 14)}';
+    }
+    return cnpj;
   }
 
   Widget _buildEmptyState() {

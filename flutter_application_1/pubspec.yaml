@@ -51,6 +51,8 @@ dependencies:
   dropdown_search:
   flutter_localization: 
   fl_chart: ^0.68.0
+  shared_preferences: ^2.5.3
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:

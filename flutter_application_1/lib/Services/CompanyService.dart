@@ -17,7 +17,8 @@ class CompanyService {
   Future<Company> createCompany({
     required String name,
     String? cnpj,
-    required int adminUserId,
+    required int? adminUserId,
+    String? hash,
   }) async {
     // Validar se CNPJ já existe
     if (cnpj != null) {
@@ -37,7 +38,7 @@ class CompanyService {
     final companyId = await _companyDao.create(company);
 
     // Associar admin à empresa
-    final admin = await _userDao.read(adminUserId);
+    final admin = await _userDao.read(adminUserId!);
     if (admin == null) {
       throw Exception('Usuário admin não encontrado');
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Services/AuthService.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_application_1/Services/AuthProvider.dart';
 import 'package:flutter_application_1/Componentes/Formularios/FormLogin.dart';
 import 'package:flutter_application_1/Routes/rotas.dart';
 import 'package:flutter_application_1/Telas/cadastro/WidgetCadastro.dart';
@@ -17,8 +18,8 @@ class WidgetLogin extends StatelessWidget {
       throw Exception('Preencha e-mail e senha.');
     }
 
-    final auth = AuthService();
-    await auth.signIn(email, password);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.signIn(email, password, rememberMe: rememberMe);
 
     if (context.mounted) {
       Navigator.of(context).pushReplacementNamed(Rotas.unifiedContract);
@@ -87,7 +88,7 @@ class WidgetLogin extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     const Text(
-                      'PagHiper',
+                      'AIC',
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,

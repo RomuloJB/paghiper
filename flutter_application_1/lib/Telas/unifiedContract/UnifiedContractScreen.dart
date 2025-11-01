@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Services/AuthProvider.dart';
 import 'package:flutter_application_1/componentes/cards/ContractResultCard.dart';
 import 'package:flutter_application_1/componentes/cards/PdfPreviewCard.dart';
 import 'package:flutter_application_1/componentes/dashboard/DashboardMetricsSection.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_application_1/Services/EnhancedContractService.dart';
 import 'package:flutter_application_1/Banco/DAO/ContractsDAO.dart';
 import 'package:flutter_application_1/Banco/entidades/Contract.dart';
 import 'package:pdfx/pdfx.dart';
+import 'package:provider/provider.dart';
 
 class UnifiedContractScreen extends StatefulWidget {
   const UnifiedContractScreen({Key? key}) : super(key: key);
@@ -35,6 +37,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
 
   int _totalContratos = 0;
   int _totalProcessados = 0;
+  int _totalPendentes = 0;
   int _totalFalhas = 0;
   double _mediaCapitalSocial = 0;
   bool _isLoadingMetrics = true;
@@ -69,6 +72,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
       _totalProcessados =
           contracts.where((c) => c.status == 'processed').length;
       _totalFalhas = contracts.where((c) => c.status == 'failed').length;
+      _totalPendentes = contracts.where((c) => c.status == 'pending').length;
 
       if (contracts.isNotEmpty) {
         final sumCapital = contracts
@@ -122,7 +126,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
 
   Future<void> _confirmAndUpload() async {
     final confirmed = await showDialog<bool>(
-      context: context,
+      context: this.context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -222,6 +226,40 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
     );
   }
 
+  Future<void> _handleLogout(BuildContext context, AuthProvider auth) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Confirmar Saída'),
+        content: const Text('Deseja realmente sair do sistema?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Sair'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await auth.signOut();
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          Rotas.login,
+          (route) => false,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,25 +271,71 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
         backgroundColor: const Color(0xFF0857C3),
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: Icon(Icons.store),
-            tooltip: 'Empresas',
-            onPressed: () => Navigator.pushNamed(context, Rotas.companiesPage),
-          ),
-          IconButton(
-            icon: const Icon(Icons.group),
-            tooltip: 'Funcionários',
-            onPressed: () => Navigator.pushNamed(context, Rotas.usersPage),
-          ),
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            tooltip: 'Consultar Protocolo',
-            onPressed: () => Navigator.pushNamed(context, Rotas.protocolSearch),
-          ),
-          IconButton(
-            icon: const Icon(Icons.list),
-            tooltip: 'Ver Listagem Completa',
-            onPressed: () => Navigator.pushNamed(context, Rotas.listagem),
+          // Botões administrativos (apenas para admins)
+          Consumer<AuthProvider>(
+            builder: (context, auth, _) {
+              if (!auth.isAdmin) {
+                // Usuário comum: apenas botões básicos
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.qr_code_scanner),
+                      tooltip: 'Consultar Protocolo',
+                      onPressed: () =>
+                          Navigator.pushNamed(context, Rotas.protocolSearch),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.list),
+                      tooltip: 'Ver Listagem Completa',
+                      onPressed: () =>
+                          Navigator.pushNamed(context, Rotas.listagem),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout),
+                      tooltip: 'Sair',
+                      onPressed: () => _handleLogout(context, auth),
+                    ),
+                  ],
+                );
+              }
+
+              // Admin: todos os botões
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.business),
+                    tooltip: 'Empresas',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Rotas.companiesPage),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.group),
+                    tooltip: 'Funcionários',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Rotas.usersPage),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.qr_code_scanner),
+                    tooltip: 'Consultar Protocolo',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Rotas.protocolSearch),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.list),
+                    tooltip: 'Ver Listagem Completa',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Rotas.listagem),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    tooltip: 'Sair',
+                    onPressed: () => _handleLogout(context, auth),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -398,6 +482,7 @@ class _UnifiedContractScreenState extends State<UnifiedContractScreen> {
 
                   DashboardMetricsSection(
                     totalContratos: _totalContratos,
+                    totalPendentes: _totalPendentes,
                     totalProcessados: _totalProcessados,
                     totalFalhas: _totalFalhas,
                     mediaCapitalSocial: _mediaCapitalSocial,

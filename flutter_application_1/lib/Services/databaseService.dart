@@ -208,7 +208,8 @@ class DatabaseService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         cnpj TEXT UNIQUE NOT NULL,
-        created_at TEXT
+        created_at TEXT,
+        hash TEXT UNIQUE
       )
     ''');
 
@@ -223,6 +224,15 @@ class DatabaseService {
       'created_at': DateTime.now().toIso8601String(),
     });
     print('Admin inserido com ID: $adminId');
+
+    final userId = await db.insert('users', {
+      'name': 'normal user',
+      'email': 'user@user.com',
+      'password': 'user123',
+      'role': 'user',
+      'created_at': DateTime.now().toIso8601String(),
+    });
+    print('user inserido com ID: $userId');
 
     // 2. Seed das tabelas de lookup
     print('Inserindo dados nas tabelas de lookup...');
