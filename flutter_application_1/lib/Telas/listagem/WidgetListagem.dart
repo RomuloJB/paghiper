@@ -22,9 +22,7 @@ class _WidgetListagemState extends State<WidgetListagem> {
   late Future<List<Contract>> _contractsFuture;
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _cnpjController = TextEditingController();
-  String? _selectedPartnerCount;
   String? _selectedStatus;
-  String? _selectedSort;
 
   @override
   void initState() {
@@ -44,15 +42,11 @@ class _WidgetListagemState extends State<WidgetListagem> {
     final cnpjFilter =
         _cnpjController.text.isNotEmpty ? _cnpjController.text : null;
     final statusFilter = _selectedStatus;
-    final partnerCountFilter = _selectedPartnerCount;
-    final sortFilter = _selectedSort;
 
     final List<Contract> contracts = await _contractDao.findByFilters(
       name: nameFilter,
       cnpjFragment: cnpjFilter,
       status: statusFilter,
-      partnerCount: partnerCountFilter,
-      orderBy: sortFilter,
     );
 
     return contracts;
@@ -83,46 +77,6 @@ class _WidgetListagemState extends State<WidgetListagem> {
     super.dispose();
   }
 
-  // Widget pequeno: se onTap for fornecido, é interativo (InkWell); se null, é apenas um container
-  Widget _smallSquare({
-    required Widget child,
-    VoidCallback? onTap,
-    Color? color,
-    bool selected = false,
-  }) {
-    final box = Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: color ??
-            (selected
-                ? const Color(0xFF0857C3)
-                : Colors.white), // azul quando selecionado
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            offset: const Offset(0, 1),
-            blurRadius: 2,
-          ),
-        ],
-      ),
-      child: Center(child: child),
-    );
-
-    if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: box,
-      );
-    } else {
-      // sem GestureDetector/InkWell para não bloquear o PopupMenuButton
-      return box;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(
@@ -131,8 +85,7 @@ class _WidgetListagemState extends State<WidgetListagem> {
     );
 
     final width = MediaQuery.of(context).size.width;
-    final isWide = width > 700;
-    final horizontalPadding = 16.0;
+    final horizontalPadding = width > 700 ? 24.0 : 16.0;
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -144,236 +97,188 @@ class _WidgetListagemState extends State<WidgetListagem> {
       ),
       body: Column(
         children: [
-          // Filtros estilizados seguindo padrão da tela
+          // 🔹 Filtros estilizados (card moderno)
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // 1) Input de nome (sozinho, full width)
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    labelText: 'Buscar por nome da empresa',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // 2) Linha: CNPJ (maior) + filtro de sócios (pequeno quadrado com ícone)
-                Row(
+              horizontal: horizontalPadding,
+              vertical: 16,
+            ),
+            child: Card(
+              elevation: 6,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // CNPJ input ocupa o restante
-                    Expanded(
-                      child: TextField(
-                        controller: _cnpjController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Buscar por CNPJ (parcial)',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          prefixIcon: const Icon(Icons.badge),
-                          filled: true,
-                          fillColor: Colors.white,
-                          suffixIcon: _cnpjController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear,
-                                      color: Colors.red),
-                                  onPressed: () {
-                                    setState(() {
-                                      _cnpjController.clear();
-                                      _loadContracts();
-                                    });
-                                  },
-                                )
-                              : null,
+                    const Text(
+                      'Filtros de Pesquisa',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0857C3),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Buscar por nome
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        labelText: 'Buscar por nome da empresa',
+                        prefixIcon:
+                            const Icon(Icons.search, color: Color(0xFF0857C3)),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color(0xFF0857C3), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
 
-                    const SizedBox(width: 12),
+                    // Buscar por CNPJ
+                    TextField(
+                      controller: _cnpjController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Buscar por CNPJ (parcial)',
+                        prefixIcon:
+                            const Icon(Icons.badge, color: Color(0xFF0857C3)),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color(0xFF0857C3), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: _cnpjController.text.isNotEmpty
+                            ? IconButton(
+                                icon:
+                                    const Icon(Icons.clear, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    _cnpjController.clear();
+                                    _loadContracts();
+                                  });
+                                },
+                              )
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
-                    // PopupMenuButton child NÃO pode capturar o toque; por isso passamos um container (sem onTap)
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        setState(() {
-                          _selectedPartnerCount =
-                              value == 'clear' ? null : value;
-                          _loadContracts();
-                        });
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(value: '1', child: Text('1 sócio')),
-                        const PopupMenuItem(
-                            value: '2', child: Text('2 sócios')),
-                        const PopupMenuItem(
-                            value: '3+', child: Text('3 ou mais sócios')),
-                        const PopupMenuDivider(),
-                        const PopupMenuItem(
-                            value: 'clear',
-                            child: Text('Limpar filtro de sócios')),
+                    // Dropdown de status
+                    DropdownButtonFormField<String>(
+                      value: _selectedStatus,
+                      hint: const Text('Filtrar por status'),
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.filter_list,
+                            color: Color(0xFF0857C3)),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color(0xFF0857C3), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'processed',
+                            child: Text('Análise Concluída')),
+                        DropdownMenuItem(
+                            value: 'processing',
+                            child: Text('Em Processamento')),
+                        DropdownMenuItem(
+                            value: 'failed', child: Text('Falhou')),
+                        DropdownMenuItem(
+                            value: 'pending', child: Text('Pendente')),
                       ],
-                      child: _smallSquare(
-                        // aqui não passamos onTap para não bloquear o PopupMenuButton
-                        child: Icon(
-                          Icons.people,
-                          color: _selectedPartnerCount != null
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                        selected: _selectedPartnerCount != null,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // 3) Linha: filtro por status (maior) + ordenação pequena ao lado (A-Z)
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _selectedStatus,
-                        hint: const Text('Filtrar por status'),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                              value: 'processed',
-                              child: Text('Análise Concluída')),
-                          DropdownMenuItem(
-                              value: 'processing',
-                              child: Text('Em Processamento')),
-                          DropdownMenuItem(
-                              value: 'failed', child: Text('Falhou')),
-                          DropdownMenuItem(
-                              value: 'pending', child: Text('Pendente')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedStatus = value;
-                            _loadContracts();
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    // Pequeno botão A-Z para ordenar alfabeticamente (interativo)
-                    _smallSquare(
-                      onTap: () {
+                      onChanged: (value) {
                         setState(() {
-                          // Toggle alphabetical sort
-                          if (_selectedSort == 'alphabetical') {
-                            _selectedSort = null;
-                          } else {
-                            _selectedSort = 'alphabetical';
-                          }
+                          _selectedStatus = value;
                           _loadContracts();
                         });
                       },
-                      child: Text(
-                        'A-Z',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: _selectedSort == 'alphabetical'
-                              ? Colors.white
-                              : Colors.black87,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Chips + botão limpar filtros
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              if (_selectedStatus != null)
+                                Chip(
+                                  label: Text(
+                                    _selectedStatus == 'processed'
+                                        ? 'Análise Concluída'
+                                        : _selectedStatus == 'processing'
+                                            ? 'Em Processamento'
+                                            : _selectedStatus == 'failed'
+                                                ? 'Falhou'
+                                                : 'Pendente',
+                                  ),
+                                  backgroundColor: Colors.blue.shade50,
+                                  avatar: const Icon(
+                                    Icons.info,
+                                    size: 18,
+                                    color: Color(0xFF0857C3),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      selected: _selectedSort == 'alphabetical',
+                        const SizedBox(width: 8),
+
+                        // Botão de limpar filtros com ícone de vassoura
+                        IconButton(
+                          onPressed: (_selectedStatus != null ||
+                                  _searchController.text.isNotEmpty ||
+                                  _cnpjController.text.isNotEmpty)
+                              ? () {
+                                  setState(() {
+                                    _selectedStatus = null;
+                                    _searchController.clear();
+                                    _cnpjController.clear();
+                                    _loadContracts();
+                                  });
+                                }
+                              : null,
+                          icon: const Icon(Icons.cleaning_services),
+                          color: Colors.red,
+                          tooltip: 'Limpar filtros',
+                          iconSize: 28,
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 12),
-
-                // Linha de chips/indicadores de filtros ativos e botão "Limpar filtros" vermelho
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          if (_selectedPartnerCount != null)
-                            Chip(
-                              label: Text(
-                                  '${_selectedPartnerCount == '3+' ? '3+ sócios' : '${_selectedPartnerCount} sócio(s)'}'),
-                              backgroundColor: Colors.blue.shade50,
-                              avatar: const Icon(Icons.people,
-                                  size: 18, color: Colors.blueAccent),
-                            ),
-                          if (_selectedStatus != null)
-                            Chip(
-                              label: Text(_selectedStatus == 'processed'
-                                  ? 'Análise Concluída'
-                                  : _selectedStatus ?? ''),
-                              backgroundColor: Colors.orange.shade50,
-                              avatar: const Icon(Icons.info,
-                                  size: 18, color: Colors.orange),
-                            ),
-                          if (_selectedSort != null)
-                            Chip(
-                              label: const Text('A-Z'),
-                              backgroundColor: Colors.green.shade50,
-                              avatar: const Icon(Icons.sort_by_alpha,
-                                  size: 18, color: Colors.green),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    // Botão vermelho para limpar todos os filtros
-                    ElevatedButton.icon(
-                      onPressed: (_selectedPartnerCount != null ||
-                              _selectedStatus != null ||
-                              _selectedSort != null)
-                          ? () {
-                              setState(() {
-                                _selectedPartnerCount = null;
-                                _selectedStatus = null;
-                                _selectedSort = null;
-                                _cnpjController.clear();
-                                _searchController.clear();
-                                _loadContracts();
-                              });
-                            }
-                          : null,
-                      icon: const Icon(Icons.clear),
-                      label: const Text('Limpar filtros'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
 
-          // Lista de contratos
+          // 🔹 Lista de contratos
           Expanded(
             child: FutureBuilder<List<Contract>>(
               future: _contractsFuture,
@@ -413,7 +318,6 @@ class _WidgetListagemState extends State<WidgetListagem> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // cabeçalho de status
                             Row(
                               children: [
                                 Icon(Icons.check_circle,
@@ -426,13 +330,11 @@ class _WidgetListagemState extends State<WidgetListagem> {
                                       fontSize: 18),
                                 ),
                                 const Spacer(),
-                                // Botão para visualizar detalhes completos
                                 IconButton(
                                   icon: const Icon(Icons.visibility,
                                       color: Colors.blue),
                                   tooltip: 'Ver detalhes do contrato',
                                   onPressed: () async {
-                                    // carrega sócios e navega para a tela de detalhes
                                     final partners =
                                         await _getPartners(contract.id);
                                     if (!mounted) return;
@@ -454,8 +356,6 @@ class _WidgetListagemState extends State<WidgetListagem> {
                               ],
                             ),
                             const SizedBox(height: 8),
-
-                            // campos principais
                             if (contract.companyName != null)
                               _infoTile(
                                 icon: Icons.business,
@@ -492,19 +392,15 @@ class _WidgetListagemState extends State<WidgetListagem> {
                                 title: contract.address!,
                                 subtitle: 'Endereço',
                               ),
-
                             const SizedBox(height: 8),
                             const Divider(),
                             const SizedBox(height: 8),
-
-                            // sócios
                             const Text(
                               'Sócios Identificados',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 6),
-
                             FutureBuilder<List<Partner>>(
                               future: _getPartners(contract.id),
                               builder: (context, snapshot) {
