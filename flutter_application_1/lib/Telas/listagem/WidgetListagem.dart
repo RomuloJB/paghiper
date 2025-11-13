@@ -77,6 +77,34 @@ class _WidgetListagemState extends State<WidgetListagem> {
     super.dispose();
   }
 
+  /// Mapeamento de status para texto e cor
+  Map<String, Map<String, dynamic>> get _statusMap => {
+        'processed': {
+          'text': 'Análise Concluída',
+          'color': Colors.green,
+        },
+        'processing': {
+          'text': 'Em Processamento',
+          'color': Colors.orange,
+        },
+        'pending': {
+          'text': 'Pendente',
+          'color': Colors.blueGrey,
+        },
+        'failed': {
+          'text': 'Falhou',
+          'color': Colors.red,
+        },
+      };
+
+  Map<String, dynamic> _getStatusData(String? status) {
+    return _statusMap[status] ??
+        {
+          'text': 'Status desconhecido',
+          'color': Colors.grey,
+        };
+  }
+
   @override
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(
@@ -299,11 +327,10 @@ class _WidgetListagemState extends State<WidgetListagem> {
                   itemCount: contracts.length,
                   itemBuilder: (context, index) {
                     final contract = contracts[index];
-                    final bool isProcessed = contract.status == 'processed';
-                    final Color statusColor =
-                        isProcessed ? Colors.green : Colors.orange;
-                    final String statusText =
-                        isProcessed ? 'Análise Concluída' : 'Em Processamento';
+                    // NOVO: usa mapping para status
+                    final statusData = _getStatusData(contract.status);
+                    final Color statusColor = statusData['color'] as Color;
+                    final String statusText = statusData['text'] as String;
 
                     return Card(
                       elevation: 5,
