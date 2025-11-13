@@ -11,7 +11,7 @@ class LoginForm extends StatefulWidget {
   });
 
   final Future<void> Function(String email, String password, bool rememberMe)?
-  onSubmit;
+      onSubmit;
   final VoidCallback? onForgotPassword;
   final bool showRememberMe;
   final EdgeInsets? padding;
@@ -106,10 +106,10 @@ class _LoginFormState extends State<LoginForm> {
               'Bem-vindo',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 28,
-                color: const Color(0xFF212121),
-              ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    color: const Color(0xFF212121),
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -118,7 +118,6 @@ class _LoginFormState extends State<LoginForm> {
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 32),
-
             TextFormField(
               controller: _emailCtrl,
               focusNode: _emailFocus,
@@ -161,7 +160,6 @@ class _LoginFormState extends State<LoginForm> {
               onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
             ),
             const SizedBox(height: 20),
-
             TextFormField(
               controller: _passwordCtrl,
               focusNode: _passwordFocus,
@@ -210,66 +208,7 @@ class _LoginFormState extends State<LoginForm> {
               onFieldSubmitted: (_) => _handleSubmit(),
             ),
             const SizedBox(height: 16),
-
-            Row(
-              children: [
-                if (widget.showRememberMe)
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => setState(() => _rememberMe = !_rememberMe),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: Checkbox(
-                                value: _rememberMe,
-                                activeColor: const Color(0xFF0857C3),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                onChanged: (value) => setState(
-                                  () => _rememberMe = value ?? false,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Lembrar-me',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  const Spacer(),
-                TextButton(
-                  onPressed: widget.onForgotPassword,
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                  ),
-                  child: const Text(
-                    'Esqueci minha senha',
-                    style: TextStyle(
-                      color: Color(0xFF0857C3),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 32),
-
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -304,7 +243,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                       ),
               ),
-            ),           
+            ),
           ],
         ),
       ),
